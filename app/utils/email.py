@@ -39,7 +39,6 @@ class Email:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # 修复：只接收 cursor，不接收 connection
                 with self.db_manager.get_cursor() as cursor:
                     sql = """
                           UPDATE users
@@ -48,7 +47,6 @@ class Email:
                           WHERE username = %s \
                           """
                     cursor.execute(sql, (self.token, 0, self.username))
-                    # 注意：get_cursor 会自动提交事务，不需要手动 commit
                     return True
 
             except MySQLError as e:
@@ -122,7 +120,6 @@ class Email:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # 修复：只接收 cursor
                 with self.db_manager.get_cursor(dictionary=True) as cursor:
                     sql = "SELECT email_verification_token, email FROM users WHERE username=%s"
                     cursor.execute(sql, (self.username,))
@@ -131,13 +128,11 @@ class Email:
                     if not result:
                         return ResponseNormal(msg="用户不存在", code=1)
 
-                    token, email = result['email_verification_token'], result['email']
-
-                    if not token or not email:
+                    if not result['email_verification_token'] or not result['email']:
                         return ResponseNormal(msg="用户信息不完整", code=1)
 
-                    self.token = token
-                    self.email = email
+                    self.token = result['email_verification_token']
+                    self.email = result['email']
 
                     if self.send_email():
                         return ResponseNormal(msg="邮件发送成功")
@@ -158,7 +153,6 @@ class Email:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # 修复：只接收 cursor
                 with self.db_manager.get_cursor(dictionary=True) as cursor:
                     sql = """
                           SELECT username, email, email_verified
@@ -186,7 +180,6 @@ class Email:
                                  WHERE username = %s \
                                  """
                     cursor.execute(update_sql, (1, 3, username))
-                    # 注意：get_cursor 会自动提交事务
 
                     return {"username": username, "email": email}
 
@@ -204,7 +197,6 @@ class Email:
         max_retries = 2
         for attempt in range(max_retries):
             try:
-                # 修复：只接收 cursor
                 with self.db_manager.get_cursor(dictionary=True) as cursor:
                     sql = "SELECT email_verified FROM users WHERE username = %s"
                     cursor.execute(sql, (username,))

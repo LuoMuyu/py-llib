@@ -176,13 +176,15 @@ class Book:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                with self.db_manager.get_cursor() as cursor:
+                with (self.db_manager.get_cursor() as cursor):
                     cursor.execute("SELECT borrow_count, count FROM books WHERE book_id=%s", (self.book_id,))
                     result = cursor.fetchone()
+                    print( result)
                     if not result:
                         return False
 
-                    borrow_count, total_count = result
+                    borrow_count = result["borrow_count"]
+                    total_count = result["count"]
                     if total_count - borrow_count <= 0:
                         return False
 

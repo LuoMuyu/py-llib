@@ -86,16 +86,15 @@ class Phone:
                     if not result:
                         return False
 
-                    phone_verification_code, phone_code_expire_time, phone_verified = result
                     now = int(time.time())
 
-                    if phone_verified:
+                    if result["phone_verified"]:
                         return False
 
-                    if phone_code_expire_time and phone_code_expire_time < now:
+                    if result["phone_code_expire_time"] and result["phone_code_expire_time"] < now:
                         return False
 
-                    if code != phone_verification_code:
+                    if code != result["phone_verification_code"]:
                         return False
 
                     update_sql = """
@@ -128,7 +127,7 @@ class Phone:
                     sql = "SELECT phone_verified FROM users WHERE username = %s"
                     cursor.execute(sql, (self.username,))
                     result = cursor.fetchone()
-                    return bool(result and result[0])
+                    return bool(result and result["phone_verified"])
             except MySQLError as e:
                 print(f"查询手机验证状态失败 (尝试 {attempt + 1}/{max_retries}): {e}")
                 if attempt == max_retries - 1:

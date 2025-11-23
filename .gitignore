@@ -1,0 +1,9 @@
+.idea
+.venv
+.gitignore
+.git
+alembic.ini
+alembic
+/app/videos/
+/app/images/
+/app/.env

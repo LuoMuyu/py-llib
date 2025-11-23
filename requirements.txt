@@ -1,0 +1,7 @@
+aiofiles==25.1.0
+cryptography==46.0.3
+fastapi==0.121.3
+pydantic==2.12.4
+python-dotenv==1.2.1
+python_jose==3.5.0
+uvicorn==0.38.0

@@ -4,6 +4,7 @@
 .git
 alembic.ini
 alembic
+/app/models/
 /app/videos/
 /app/images/
-/app/.env
+.env
